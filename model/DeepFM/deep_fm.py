@@ -42,8 +42,13 @@ def read():
 
     dataset = dataset.map(parser)  # 接受的参数是一个函数
 
+    dataset = dataset.repeat(3).shuffle(64).batch(32)
+
     iterator = dataset.make_initializable_iterator()
-    return iterator, iterator.get_next()
+    next_elem = iterator.get_next()
+    labels = next_elem[0]
+    # return next_elem[1:], labels
+    return iterator, next_elem
 
 
 def get_feature_columns():
@@ -63,8 +68,6 @@ def get_feature_columns():
     ]
 
     return columns
-
-
 
 
 def model_fn(features, labels, mode, params):
@@ -90,24 +93,30 @@ def model_fn(features, labels, mode, params):
 if __name__ == '__main__':
     # iterator, next_elem = read()
 
-    model_params = {"lr_rate": 0.01,
-                    "feature_column": get_feature_columns()
-                    }
-    model = tf.estimator.Estimator(model_fn=model_fn, params=model_params, model_dir="model/lr")
+    # model_params = {"lr_rate": 0.01,
+    #                 "feature_column": get_feature_columns()
+    #                 }
+    # model = tf.estimator.Estimator(model_fn=model_fn, params=model_params, model_dir="model/lr")
+    #
+    #
+    # train_spec = tf.estimator.TrainSpec(read)
+    # eval_spec = tf.estimator.EvalSpec(read)
+    #
+    # tf.estimator.train_and_evaluate(model, train_spec, eval_spec)
 
 
-    train_spec = tf.estimator.TrainSpec(read)
+    # input_layers = tf.feature_column.input_layer(features=, feature_columns=get_feature_schema())
 
 
-    # iterator, next_elem = read(get_feature_schema())
-    #
-    # with tf.Session() as sess:
-    #
-    #     sess.run(iterator.initializer)
-    #
-    #     for i in range(10):
-    #
-    #         print(sess.run(next_elem))
+    iterator, next_elem = read()
+
+    with tf.Session() as sess:
+
+        sess.run(iterator.initializer)
+
+        for i in range(10):
+
+            print(sess.run(next_elem))
 
 
 
