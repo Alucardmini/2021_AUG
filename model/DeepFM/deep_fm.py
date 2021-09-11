@@ -89,7 +89,6 @@ def model_fn(features, labels, mode, params):
     return tf.estimator.EstimatorSpec(mode=mode, train_op=train_op, loss=loss)
 
 
-
 if __name__ == '__main__':
     # iterator, next_elem = read()
 
@@ -108,15 +107,21 @@ if __name__ == '__main__':
     # input_layers = tf.feature_column.input_layer(features=, feature_columns=get_feature_schema())
 
 
+
     iterator, next_elem = read()
 
     with tf.Session() as sess:
 
         sess.run(iterator.initializer)
 
-        for i in range(10):
+        for i in range(1):
 
-            print(sess.run(next_elem))
+            print(sess.run(next_elem[0]))
+
+            feats = tf.identity(next_elem[1], name="feats")
+
+            print(sess.run(feats))
+
 
 
 
