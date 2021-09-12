@@ -38,15 +38,16 @@ def read():
         )
 
 
-        return features["label"], features['Sex'], features['Embarked'], features['Pclass'], features['Parch'],features['Age'],features['SibSp'],features['Fare'],features['Ticket'],features['Cabin']
+        # return features["label"], features['Sex'], features['Embarked'], features['Pclass'], features['Parch'],features['Age'],features['SibSp'],features['Fare'],features['Ticket'],features['Cabin']
+        return features
 
     dataset = dataset.map(parser)  # 接受的参数是一个函数
 
     dataset = dataset.repeat(3).shuffle(64).batch(32)
 
-    iterator = dataset.make_initializable_iterator()
+    iterator = dataset.make_one_shot_iterator()
     next_elem = iterator.get_next()
-    labels = next_elem[0]
+    # labels = next_elem[0]
     # return next_elem[1:], labels
     return iterator, next_elem
 
@@ -112,15 +113,20 @@ if __name__ == '__main__':
 
     with tf.Session() as sess:
 
-        sess.run(iterator.initializer)
+        # sess.run(iterator.initializer)
 
         for i in range(1):
+            pass
 
-            print(sess.run(next_elem[0]))
+            # print(sess.run(next_elem[0]))
 
-            feats = tf.identity(next_elem[1], name="feats")
+            print(sess.run(next_elem.pop("label")))
+            print(sess.run(next_elem.pop("Sex")))
+            print(sess.run(next_elem.pop("Embarked")))
 
-            print(sess.run(feats))
+            # feats = tf.identity(next_elem[1], name="feats")
+            #
+            # print(sess.run(feats))
 
 
 
