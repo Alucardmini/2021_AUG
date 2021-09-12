@@ -750,7 +750,7 @@ node {
         dtype: DT_INT64
         tensor_shape {
         }
-        int64_val: 3
+        int64_val: 10
       }
     }
   }
@@ -1248,7 +1248,7 @@ node {
     key: "dataset_factory"
     value {
       func {
-        name: "_make_dataset_8TQ9B8ISjKU"
+        name: "_make_dataset_GnLfsxES3Ac"
       }
     }
   }
@@ -9224,6 +9224,810 @@ node {
   input: "^GradientDescent/update_dense_1/kernel/ApplyGradientDescent"
 }
 node {
+  name: "ArgMax/dimension"
+  op: "Const"
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+        }
+        int_val: 1
+      }
+    }
+  }
+}
+node {
+  name: "ArgMax"
+  op: "ArgMax"
+  input: "dense_1/BiasAdd"
+  input: "ArgMax/dimension"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+          dim {
+            size: -1
+          }
+        }
+      }
+    }
+  }
+  attr {
+    key: "output_type"
+    value {
+      type: DT_INT64
+    }
+  }
+}
+node {
+  name: "remove_squeezable_dimensions/Squeeze"
+  op: "Squeeze"
+  input: "IteratorGetNext:9"
+  attr {
+    key: "T"
+    value {
+      type: DT_INT64
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+          dim {
+            size: -1
+          }
+        }
+      }
+    }
+  }
+  attr {
+    key: "squeeze_dims"
+    value {
+      list {
+        i: -1
+      }
+    }
+  }
+}
+node {
+  name: "Equal"
+  op: "Equal"
+  input: "remove_squeezable_dimensions/Squeeze"
+  input: "ArgMax"
+  attr {
+    key: "T"
+    value {
+      type: DT_INT64
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+          dim {
+            size: -1
+          }
+        }
+      }
+    }
+  }
+}
+node {
+  name: "Cast_1"
+  op: "Cast"
+  input: "Equal"
+  attr {
+    key: "DstT"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "SrcT"
+    value {
+      type: DT_BOOL
+    }
+  }
+  attr {
+    key: "Truncate"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+          dim {
+            size: -1
+          }
+        }
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/total/Initializer/zeros"
+  op: "Const"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/total"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+        }
+        float_val: 0.0
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/total"
+  op: "VariableV2"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/total"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "container"
+    value {
+      s: ""
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "shape"
+    value {
+      shape {
+      }
+    }
+  }
+  attr {
+    key: "shared_name"
+    value {
+      s: ""
+    }
+  }
+}
+node {
+  name: "accuracy/total/Assign"
+  op: "Assign"
+  input: "accuracy/total"
+  input: "accuracy/total/Initializer/zeros"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/total"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "use_locking"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "validate_shape"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "accuracy/total/read"
+  op: "Identity"
+  input: "accuracy/total"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/total"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/count/Initializer/zeros"
+  op: "Const"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/count"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+        }
+        float_val: 0.0
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/count"
+  op: "VariableV2"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/count"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "container"
+    value {
+      s: ""
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "shape"
+    value {
+      shape {
+      }
+    }
+  }
+  attr {
+    key: "shared_name"
+    value {
+      s: ""
+    }
+  }
+}
+node {
+  name: "accuracy/count/Assign"
+  op: "Assign"
+  input: "accuracy/count"
+  input: "accuracy/count/Initializer/zeros"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/count"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "use_locking"
+    value {
+      b: true
+    }
+  }
+  attr {
+    key: "validate_shape"
+    value {
+      b: true
+    }
+  }
+}
+node {
+  name: "accuracy/count/read"
+  op: "Identity"
+  input: "accuracy/count"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/count"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/Size"
+  op: "Size"
+  input: "Cast_1"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "out_type"
+    value {
+      type: DT_INT32
+    }
+  }
+}
+node {
+  name: "accuracy/Cast"
+  op: "Cast"
+  input: "accuracy/Size"
+  attr {
+    key: "DstT"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "SrcT"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "Truncate"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/Const"
+  op: "Const"
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+          dim {
+            size: 1
+          }
+        }
+      }
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_INT32
+        tensor_shape {
+          dim {
+            size: 1
+          }
+        }
+        int_val: 0
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/Sum"
+  op: "Sum"
+  input: "Cast_1"
+  input: "accuracy/Const"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "Tidx"
+    value {
+      type: DT_INT32
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "keep_dims"
+    value {
+      b: false
+    }
+  }
+}
+node {
+  name: "accuracy/AssignAdd"
+  op: "AssignAdd"
+  input: "accuracy/total"
+  input: "accuracy/Sum"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/total"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "use_locking"
+    value {
+      b: false
+    }
+  }
+}
+node {
+  name: "accuracy/AssignAdd_1"
+  op: "AssignAdd"
+  input: "accuracy/count"
+  input: "accuracy/Cast"
+  input: "^Cast_1"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/count"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "use_locking"
+    value {
+      b: false
+    }
+  }
+}
+node {
+  name: "accuracy/Maximum/y"
+  op: "Const"
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+        }
+        float_val: 0.0
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/Maximum"
+  op: "Maximum"
+  input: "accuracy/count/read"
+  input: "accuracy/Maximum/y"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/value"
+  op: "DivNoNan"
+  input: "accuracy/total/read"
+  input: "accuracy/Maximum"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/Maximum_1/y"
+  op: "Const"
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "value"
+    value {
+      tensor {
+        dtype: DT_FLOAT
+        tensor_shape {
+        }
+        float_val: 0.0
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/Maximum_1"
+  op: "Maximum"
+  input: "accuracy/AssignAdd_1"
+  input: "accuracy/Maximum_1/y"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+}
+node {
+  name: "accuracy/update_op"
+  op: "DivNoNan"
+  input: "accuracy/AssignAdd"
+  input: "accuracy/Maximum_1"
+  attr {
+    key: "T"
+    value {
+      type: DT_FLOAT
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+}
+node {
   name: "loss/tags"
   op: "Const"
   attr {
@@ -9434,6 +10238,62 @@ node {
   }
 }
 node {
+  name: "report_uninitialized_variables/IsVariableInitialized_5"
+  op: "IsVariableInitialized"
+  input: "accuracy/total"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/total"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
+  name: "report_uninitialized_variables/IsVariableInitialized_6"
+  op: "IsVariableInitialized"
+  input: "accuracy/count"
+  attr {
+    key: "_class"
+    value {
+      list {
+        s: "loc:@accuracy/count"
+      }
+    }
+  }
+  attr {
+    key: "_output_shapes"
+    value {
+      list {
+        shape {
+        }
+      }
+    }
+  }
+  attr {
+    key: "dtype"
+    value {
+      type: DT_FLOAT
+    }
+  }
+}
+node {
   name: "report_uninitialized_variables/stack"
   op: "Pack"
   input: "report_uninitialized_variables/IsVariableInitialized"
@@ -9441,11 +10301,13 @@ node {
   input: "report_uninitialized_variables/IsVariableInitialized_2"
   input: "report_uninitialized_variables/IsVariableInitialized_3"
   input: "report_uninitialized_variables/IsVariableInitialized_4"
+  input: "report_uninitialized_variables/IsVariableInitialized_5"
+  input: "report_uninitialized_variables/IsVariableInitialized_6"
   device: "/device:CPU:0"
   attr {
     key: "N"
     value {
-      i: 5
+      i: 7
     }
   }
   attr {
@@ -9460,7 +10322,7 @@ node {
       list {
         shape {
           dim {
-            size: 5
+            size: 7
           }
         }
       }
@@ -9484,7 +10346,7 @@ node {
       list {
         shape {
           dim {
-            size: 5
+            size: 7
           }
         }
       }
@@ -9501,7 +10363,7 @@ node {
       list {
         shape {
           dim {
-            size: 5
+            size: 7
           }
         }
       }
@@ -9520,7 +10382,7 @@ node {
         dtype: DT_STRING
         tensor_shape {
           dim {
-            size: 5
+            size: 7
           }
         }
         string_val: "global_step"
@@ -9528,6 +10390,8 @@ node {
         string_val: "dense/bias"
         string_val: "dense_1/kernel"
         string_val: "dense_1/bias"
+        string_val: "accuracy/total"
+        string_val: "accuracy/count"
       }
     }
   }
@@ -9564,7 +10428,7 @@ node {
             size: 1
           }
         }
-        int_val: 5
+        int_val: 7
       }
     }
   }
@@ -9846,7 +10710,7 @@ node {
             size: 1
           }
         }
-        int_val: 5
+        int_val: 7
       }
     }
   }
@@ -10056,7 +10920,7 @@ node {
             size: 1
           }
         }
-        int_val: 5
+        int_val: 7
       }
     }
   }
@@ -10364,7 +11228,7 @@ node {
       list {
         shape {
           dim {
-            size: 5
+            size: 7
           }
         }
       }
@@ -10432,7 +11296,7 @@ node {
       list {
         shape {
           dim {
-            size: 5
+            size: 7
           }
         }
       }
@@ -12058,6 +12922,8 @@ node {
 node {
   name: "init_2"
   op: "NoOp"
+  input: "^accuracy/count/Assign"
+  input: "^accuracy/total/Assign"
 }
 node {
   name: "init_all_tables"
@@ -12203,7 +13069,7 @@ node {
         dtype: DT_STRING
         tensor_shape {
         }
-        string_val: "_temp_ca4d6e9527ab4740865e8fa6e084794c/part"
+        string_val: "_temp_cf0931bd238841bd82dc88fb48a1dd72/part"
       }
     }
   }
@@ -13026,7 +13892,7 @@ library {
   }
   function {
     signature {
-      name: "_make_dataset_8TQ9B8ISjKU"
+      name: "_make_dataset_GnLfsxES3Ac"
       output_arg {
         name: "modeldataset"
         type: DT_VARIANT
@@ -13315,7 +14181,7 @@ library {
             dtype: DT_INT64
             tensor_shape {
             }
-            int64_val: 3
+            int64_val: 10
           }
         }
       }

@@ -43,7 +43,7 @@ def read():
 
     dataset = dataset.map(parser)  # 接受的参数是一个函数
 
-    dataset = dataset.repeat(3).shuffle(64).batch(32)
+    dataset = dataset.repeat(10).shuffle(64).batch(32)
 
     iterator = dataset.make_one_shot_iterator()
     next_elem = iterator.get_next()
@@ -85,8 +85,21 @@ def model_fn(features, labels, mode, params):
     loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=y_pred, labels=tf.cast(labels, tf.float32)))
 
     train_op = tf.train.GradientDescentOptimizer(learning_rate=params['lr_rate']).minimize(loss)
+    eval_metric_ops = {"accuracy": tf.metrics.accuracy(tf.arg_max(y_pred, 1), labels)}
 
-    return tf.estimator.EstimatorSpec(mode=mode, train_op=train_op, loss=loss)
+    return tf.estimator.EstimatorSpec(mode=mode, train_op=train_op, loss=loss, eval_metric_ops=eval_metric_ops)
+
+
+def serving_input_fn():
+    # features_placeholder = tf.placeholder(tf.float32, [None])
+    # labels_placeholder = tf.placeholder(tf.float32, [None])
+
+    inputs = {'Sex': tf.placeholder(tf.string, [None], name="Sex"),
+              'Embarked': tf.placeholder(tf.string, [None], name="Embarked"),
+              'Pclass': tf.placeholder(tf.int32, [None], name="Pclass"),
+              'Age': tf.placeholder(tf.float32, [None], name="Age")
+              }
+    return tf.estimator.export.ServingInputReceiver(inputs, inputs)
 
 
 if __name__ == '__main__':
@@ -103,6 +116,8 @@ if __name__ == '__main__':
     eval_spec = tf.estimator.EvalSpec(read)
 
     tf.estimator.train_and_evaluate(model, train_spec, eval_spec)
+
+    model.export_saved_model("model/lr/saved_model", serving_input_fn)
 
 
 
