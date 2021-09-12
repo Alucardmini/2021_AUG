@@ -49,12 +49,13 @@ def read():
     next_elem = iterator.get_next()
     # labels = next_elem[0]
     # return next_elem[1:], labels
-    return iterator, next_elem
+    # return iterator, next_elem
+    return next_elem, next_elem.pop("label")
 
 
 def get_feature_columns():
 
-    sex = tf.feature_column.categorical_column_with_hash_bucket('sex', hash_bucket_size=3, dtype=tf.string)
+    sex = tf.feature_column.categorical_column_with_hash_bucket('Sex', hash_bucket_size=3, dtype=tf.string)
     sex = tf.feature_column.indicator_column(sex)
 
     embarked = tf.feature_column.categorical_column_with_hash_bucket('Embarked', hash_bucket_size=3, dtype=tf.string)
@@ -73,10 +74,7 @@ def get_feature_columns():
 
 def model_fn(features, labels, mode, params):
 
-    feature_columns = params['feature_column']
-
-    input_layers = tf.feature_column.input_layer(features=features, feature_columns=feature_columns)
-
+    input_layers = tf.feature_column.input_layer(features=features, feature_columns=get_feature_columns())
     fc1 = tf.layers.dense(input_layers, 1024)
     fc1 = tf.layers.dropout(fc1, rate=0.4)
     y_pred = tf.layers.dense(fc1, 1)
@@ -84,7 +82,8 @@ def model_fn(features, labels, mode, params):
     if mode == tf.estimator.ModeKeys.PREDICT:
         return tf.estimator.EstimatorSpec(mode=mode, predictions={"result": tf.arg_max(y_pred, 1)})
 
-    loss = tf.reduce_mean(tf.square(y_pred - labels))
+    loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=y_pred, labels=tf.cast(labels, tf.float32)))
+
     train_op = tf.train.GradientDescentOptimizer(learning_rate=params['lr_rate']).minimize(loss)
 
     return tf.estimator.EstimatorSpec(mode=mode, train_op=train_op, loss=loss)
@@ -93,40 +92,18 @@ def model_fn(features, labels, mode, params):
 if __name__ == '__main__':
     # iterator, next_elem = read()
 
-    # model_params = {"lr_rate": 0.01,
-    #                 "feature_column": get_feature_columns()
-    #                 }
-    # model = tf.estimator.Estimator(model_fn=model_fn, params=model_params, model_dir="model/lr")
-    #
-    #
-    # train_spec = tf.estimator.TrainSpec(read)
-    # eval_spec = tf.estimator.EvalSpec(read)
-    #
-    # tf.estimator.train_and_evaluate(model, train_spec, eval_spec)
-
-
-    # input_layers = tf.feature_column.input_layer(features=, feature_columns=get_feature_schema())
-
-
+    model_params = {"lr_rate": 0.01,
+                    "feature_column": get_feature_columns()
+                    }
+    model = tf.estimator.Estimator(model_fn=model_fn, params=model_params, model_dir="model/lr")
 
     iterator, next_elem = read()
 
-    with tf.Session() as sess:
+    train_spec = tf.estimator.TrainSpec(input_fn=read, max_steps=20000)
+    eval_spec = tf.estimator.EvalSpec(read)
 
-        # sess.run(iterator.initializer)
+    tf.estimator.train_and_evaluate(model, train_spec, eval_spec)
 
-        for i in range(1):
-            pass
-
-            # print(sess.run(next_elem[0]))
-
-            print(sess.run(next_elem.pop("label")))
-            print(sess.run(next_elem.pop("Sex")))
-            print(sess.run(next_elem.pop("Embarked")))
-
-            # feats = tf.identity(next_elem[1], name="feats")
-            #
-            # print(sess.run(feats))
 
 
 
